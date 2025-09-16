@@ -1,4 +1,3 @@
-// In: com.example.memberservice.dto.MemberDTO.java
 package com.example.memberservice.dto;
 
 public class MemberDTO {

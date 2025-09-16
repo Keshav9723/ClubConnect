@@ -1,4 +1,3 @@
-// In: com.example.eventservice.repository.EventRepositoryImpl.java
 package com.example.eventservice.repository;
 
 

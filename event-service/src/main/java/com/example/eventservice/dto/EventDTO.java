@@ -1,4 +1,3 @@
-// In: com.example.eventservice.dto.EventDTO.java
 package com.example.eventservice.dto;
 
 import java.time.LocalDateTime;

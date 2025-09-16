@@ -1,4 +1,3 @@
-// In: com.example.clubservice.service.ClubServiceImpl.java
 package com.example.clubservice.service;
 
 import java.util.HashMap;

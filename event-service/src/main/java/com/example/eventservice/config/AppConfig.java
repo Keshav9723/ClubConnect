@@ -1,4 +1,3 @@
-// In: com.example.eventservice.config.AppConfig.java
 package com.example.eventservice.config;
 
 import org.modelmapper.ModelMapper;

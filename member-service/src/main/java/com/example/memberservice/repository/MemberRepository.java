@@ -1,4 +1,3 @@
-// In: com.example.memberservice.repository.MemberRepository.java
 package com.example.memberservice.repository;
 
 import java.util.List;

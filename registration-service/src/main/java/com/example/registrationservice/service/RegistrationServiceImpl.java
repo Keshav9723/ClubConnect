@@ -1,4 +1,3 @@
-// In: com.example.registrationservice.service.RegistrationServiceImpl.java
 package com.example.registrationservice.service;
 
 import java.time.LocalDateTime;

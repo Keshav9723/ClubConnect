@@ -1,4 +1,3 @@
-// In: com.example.registrationservice.service.RegistrationService.java
 package com.example.registrationservice.service;
 
 import java.util.List;

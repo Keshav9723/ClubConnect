@@ -1,4 +1,3 @@
-// In: com.example.eventservice.model.Event.java
 package com.example.eventservice.model;
 
 import java.time.LocalDateTime;

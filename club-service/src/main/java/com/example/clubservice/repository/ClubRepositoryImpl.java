@@ -1,4 +1,3 @@
-// In: com.example.clubservice.repository.ClubRepositoryImpl.java
 package com.example.clubservice.repository;
 
 
@@ -60,7 +59,7 @@ public class ClubRepositoryImpl implements ClubRepository {
     @Override
     public Club save(Club club) {
         String sql = "INSERT INTO clubs (name, description, category) VALUES (?, ?, ?)";
-        jdbcTemplate.update(sql, club.get_Name(), club.get_Description(), club.get_Category());
+        jdbcTemplate.update(sql, club.get_Name(), club.get_Description(), club.get_Category(),  club.get_Id());
         return club;
     }
 

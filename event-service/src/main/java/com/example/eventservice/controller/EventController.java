@@ -1,4 +1,3 @@
-// In: com.example.eventservice.controller.EventController.java
 package com.example.eventservice.controller;
 
 import java.util.HashMap;

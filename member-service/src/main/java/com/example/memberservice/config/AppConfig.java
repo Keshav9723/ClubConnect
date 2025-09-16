@@ -1,4 +1,3 @@
-// In: com.example.memberservice.config.AppConfig.java
 package com.example.memberservice.config;
 
 import org.modelmapper.ModelMapper;

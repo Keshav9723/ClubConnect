@@ -1,4 +1,3 @@
-// In: com.example.memberservice.controller.MemberController.java
 package com.example.memberservice.controller;
 
 import java.util.HashMap;

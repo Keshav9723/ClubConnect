@@ -1,4 +1,3 @@
-// In: com.example.memberservice.model.Member.java
 package com.example.memberservice.model;
 
 public class Member {

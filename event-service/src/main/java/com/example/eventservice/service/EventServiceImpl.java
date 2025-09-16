@@ -1,4 +1,3 @@
-// In: com.example.eventservice.service.EventServiceImpl.java
 package com.example.eventservice.service;
 
 import java.util.Collections;

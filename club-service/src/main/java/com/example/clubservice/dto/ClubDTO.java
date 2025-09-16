@@ -1,4 +1,3 @@
-// In: com.example.clubservice.dto.ClubDTO.java
 package com.example.clubservice.dto;
 
 public class ClubDTO {

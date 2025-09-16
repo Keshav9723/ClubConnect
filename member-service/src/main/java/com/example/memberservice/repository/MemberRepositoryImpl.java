@@ -1,4 +1,3 @@
-// In: com.example.memberservice.repository.MemberRepositoryImpl.java
 package com.example.memberservice.repository;
 
 

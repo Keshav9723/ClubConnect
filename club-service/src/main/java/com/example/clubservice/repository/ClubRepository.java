@@ -1,4 +1,3 @@
-// In: com.example.clubservice.repository.ClubRepository.java
 package com.example.clubservice.repository;
 
 import java.util.List;
