@@ -1,19 +1,28 @@
 package com.example.registrationservice.controller;
 
-import com.example.registrationservice.dto.RegistrationDTO;
-import com.example.registrationservice.service.EnhancedRegistrationService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.registrationservice.dto.RegistrationDTO;
+import com.example.registrationservice.service.RegistrationService;
 
 @RestController
 public class RegistrationController {
 
     @Autowired
-    private EnhancedRegistrationService enhancedRegistrationService;
+    private RegistrationService registrationService;
 
     @GetMapping("/")
     public Map<String, String> home() {
@@ -26,38 +35,41 @@ public class RegistrationController {
 
     @GetMapping("/registrations")
     public List<RegistrationDTO> getRegistrations() {
-        return enhancedRegistrationService.getAllRegistrations();
+        return registrationService.getAllRegistrations();
     }
 
     @GetMapping("/registrations/{id}")
-    public RegistrationDTO getRegistrationById(@PathVariable Long id) {
-        Optional<RegistrationDTO> registration = enhancedRegistrationService.getRegistrationById(id);
-        return registration.orElse(null);
+    public ResponseEntity<RegistrationDTO> getRegistrationById(@PathVariable long id) {
+        return registrationService.getRegistrationById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/registrations/member/{memberId}")
-    public List<RegistrationDTO> getRegistrationsByMember(@PathVariable Long memberId) {
-        return enhancedRegistrationService.getRegistrationsByMember(memberId);
+    public List<RegistrationDTO> getRegistrationsByMember(@PathVariable long memberId) {
+        return registrationService.getRegistrationsByMember(memberId);
     }
 
     @GetMapping("/registrations/event/{eventId}")
-    public List<RegistrationDTO> getRegistrationsByEvent(@PathVariable Long eventId) {
-        return enhancedRegistrationService.getRegistrationsByEvent(eventId);
+    public List<RegistrationDTO> getRegistrationsByEvent(@PathVariable long eventId) {
+        return registrationService.getRegistrationsByEvent(eventId);
     }
 
     @PostMapping("/registrations")
     public RegistrationDTO createRegistration(@RequestBody RegistrationDTO registrationDTO) {
-        return enhancedRegistrationService.createRegistration(registrationDTO);
+        return registrationService.createRegistration(registrationDTO);
     }
 
     @PostMapping("/registrations/register/{memberId}/{eventId}")
-    public RegistrationDTO registerMemberForEvent(@PathVariable Long memberId, @PathVariable Long eventId) {
-        return enhancedRegistrationService.registerMemberForEvent(memberId, eventId);
+    public ResponseEntity<RegistrationDTO> registerMemberForEvent(@PathVariable long memberId, @PathVariable long eventId) {
+        return registrationService.registerMemberForEvent(memberId, eventId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.badRequest().build());
     }
 
-    @PostMapping("/registrations/unregister/{memberId}/{eventId}")
-    public Map<String, Object> unregisterMemberFromEvent(@PathVariable Long memberId, @PathVariable Long eventId) {
-        boolean success = enhancedRegistrationService.unregisterMemberFromEvent(memberId, eventId);
+    @DeleteMapping("/registrations/unregister/{memberId}/{eventId}")
+    public Map<String, Object> unregisterMemberFromEvent(@PathVariable long memberId, @PathVariable long eventId) {
+        boolean success = registrationService.unregisterMemberFromEvent(memberId, eventId);
         Map<String, Object> response = new HashMap<>();
         response.put("success", success);
         response.put("message", success ? "Unregistration successful" : "Unregistration failed");
@@ -65,13 +77,15 @@ public class RegistrationController {
     }
 
     @PutMapping("/registrations/{id}/status")
-    public RegistrationDTO updateRegistrationStatus(@PathVariable Long id, @RequestParam String status) {
-        return enhancedRegistrationService.updateRegistrationStatus(id, status);
+    public ResponseEntity<RegistrationDTO> updateRegistrationStatus(@PathVariable long id, @RequestParam String status) {
+        return registrationService.updateRegistrationStatus(id, status)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/registrations/{id}")
-    public Map<String, String> deleteRegistration(@PathVariable Long id) {
-        enhancedRegistrationService.deleteRegistration(id);
+    public Map<String, String> deleteRegistration(@PathVariable long id) {
+        registrationService.deleteRegistration(id);
         Map<String, String> response = new HashMap<>();
         response.put("message", "Registration deleted successfully");
         return response;
@@ -79,6 +93,6 @@ public class RegistrationController {
 
     @GetMapping("/registrations/statistics")
     public Map<String, Object> getRegistrationStatistics() {
-        return enhancedRegistrationService.getRegistrationStatistics();
+        return registrationService.getRegistrationStatistics();
     }
 }

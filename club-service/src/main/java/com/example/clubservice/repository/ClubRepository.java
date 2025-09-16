@@ -1,10 +1,17 @@
+// In: com.example.clubservice.repository.ClubRepository.java
 package com.example.clubservice.repository;
 
-import com.example.clubservice.model.Club;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.util.List;
+import java.util.Optional;
 
-@Repository
-public interface ClubRepository extends JpaRepository<Club, Long> {
-    Club findByName(String name);
+import com.example.clubservice.model.Club;
+
+public interface ClubRepository {
+    List<Club> findAll();
+    Optional<Club> findById(int id);
+    Optional<Club> findByName(String name);
+    boolean existsByName(String name);
+    Club save(Club club);
+    Club update(Club club);
+    void deleteById(int id);
 }

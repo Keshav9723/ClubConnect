@@ -1,83 +1,40 @@
+// In: com.example.eventservice.model.Event.java
 package com.example.eventservice.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "events")
 public class Event {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @Column(nullable = false)
-    private String name;
-    
-    private String description;
-    
-    private String location;
-    
-    @Column(nullable = false)
-    private LocalDateTime dateTime;
-    
-    private String clubName;
-    
-    private String status;
-    
-    private int maxCapacity;
-    
-    private int currentCapacity;
-    
-    // Constructors
-    public Event() {
-        this.status = "UPCOMING";
-        this.currentCapacity = 0;
+    long _Id;
+    String _Name;
+    String _Description;
+    String _Location;
+    LocalDateTime _DateTime;
+    int _ClubId;
+
+    // Default constructor
+    public Event() {}
+
+    // Parameterized constructor (Correctly added)
+    public Event(long id, String name, String description, String location, LocalDateTime dateTime, int clubId) {
+        _Id = id;
+        _Name = name;
+        _Description = description;
+        _Location = location;
+        _DateTime = dateTime;
+        _ClubId = clubId;
     }
-    
-    public Event(String name, String description, String location, LocalDateTime dateTime, String clubName, int maxCapacity) {
-        this();
-        this.name = name;
-        this.description = description;
-        this.location = location;
-        this.dateTime = dateTime;
-        this.clubName = clubName;
-        this.maxCapacity = maxCapacity;
-    }
-    
+
     // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-    
-    public LocalDateTime getDateTime() { return dateTime; }
-    public void setDateTime(LocalDateTime dateTime) { this.dateTime = dateTime; }
-    
-    public String getClubName() { return clubName; }
-    public void setClubName(String clubName) { this.clubName = clubName; }
-    
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-    
-    public int getMaxCapacity() { return maxCapacity; }
-    public void setMaxCapacity(int maxCapacity) { this.maxCapacity = maxCapacity; }
-    
-    public int getCurrentCapacity() { return currentCapacity; }
-    public void setCurrentCapacity(int currentCapacity) { this.currentCapacity = currentCapacity; }
-    
-    public boolean isFull() {
-        return currentCapacity >= maxCapacity;
-    }
-    
-    public int getAvailableSpots() {
-        return maxCapacity - currentCapacity;
-    }
+    public long get_Id() { return _Id; }
+    public void set_Id(long id) { _Id = id; }
+    public String get_Name() { return _Name; }
+    public void set_Name(String name) { _Name = name; }
+    public String get_Description() { return _Description; }
+    public void set_Description(String description) { _Description = description; }
+    public String get_Location() { return _Location; }
+    public void set_Location(String location) { _Location = location; }
+    public LocalDateTime get_DateTime() { return _DateTime; }
+    public void set_DateTime(LocalDateTime dateTime) { _DateTime = dateTime; }
+    public int get_ClubId() { return _ClubId; }
+    public void set_ClubId(int clubId) { _ClubId = clubId; }
 }

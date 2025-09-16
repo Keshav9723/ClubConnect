@@ -1,113 +1,34 @@
+// In: com.example.memberservice.dto.MemberDTO.java
 package com.example.memberservice.dto;
 
-import java.time.LocalDateTime;
-
-/**
- * Data Transfer Object for Member entity
- * Used for API responses and inter-service communication
- */
 public class MemberDTO {
-    
-    private Long id;
-    private String name;
-    private String email;
-    private String phone;
-    private String clubName;
-    private LocalDateTime joinDate;
-    private String status;
-    private Long clubId;
-    private String clubDescription;
-    private String clubCategory;
-    
-    // Constructors
-    public MemberDTO() {}
-    
-    public MemberDTO(Long id, String name, String email, String phone, String clubName) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-        this.clubName = clubName;
+    long _Id;
+    String _Name;
+    String _Email;
+    String _Phone;
+    int _ClubId;
+
+    public MemberDTO() {
+        // Default constructor
     }
-    
-    // Getters and Setters
-    public Long getId() {
-        return id;
+
+    public MemberDTO(long id, String name, String email, String phone, int clubId) {
+        _Id = id;
+        _Name = name;
+        _Email = email;
+        _Phone = phone;
+        _ClubId = clubId;
     }
-    
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    public String getEmail() {
-        return email;
-    }
-    
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    
-    public String getPhone() {
-        return phone;
-    }
-    
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-    
-    public String getClubName() {
-        return clubName;
-    }
-    
-    public void setClubName(String clubName) {
-        this.clubName = clubName;
-    }
-    
-    public LocalDateTime getJoinDate() {
-        return joinDate;
-    }
-    
-    public void setJoinDate(LocalDateTime joinDate) {
-        this.joinDate = joinDate;
-    }
-    
-    public String getStatus() {
-        return status;
-    }
-    
-    public void setStatus(String status) {
-        this.status = status;
-    }
-    
-    public Long getClubId() {
-        return clubId;
-    }
-    
-    public void setClubId(Long clubId) {
-        this.clubId = clubId;
-    }
-    
-    public String getClubDescription() {
-        return clubDescription;
-    }
-    
-    public void setClubDescription(String clubDescription) {
-        this.clubDescription = clubDescription;
-    }
-    
-    public String getClubCategory() {
-        return clubCategory;
-    }
-    
-    public void setClubCategory(String clubCategory) {
-        this.clubCategory = clubCategory;
-    }
+
+    // Setters and Getters
+    public long get_Id() { return _Id; }
+    public void set_Id(long id) { _Id = id; }
+    public String get_Name() { return _Name; }
+    public void set_Name(String name) { _Name = name; }
+    public String get_Email() { return _Email; }
+    public void set_Email(String email) { _Email = email; }
+    public String get_Phone() { return _Phone; }
+    public void set_Phone(String phone) { _Phone = phone; }
+    public int get_ClubId() { return _ClubId; }
+    public void set_ClubId(int clubId) { _ClubId = clubId; }
 }
