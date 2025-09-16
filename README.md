@@ -54,7 +54,6 @@ A comprehensive club management system built with Spring Boot microservices arch
 - **Service Discovery**: Netflix Eureka
 - **API Gateway**: Spring Cloud Gateway
 - **Database**: MySQL 8.0
-- **ORM**: Spring Data JPA with Hibernate
 - **Build Tool**: Maven
 - **Cloud**: Spring Cloud 2023.0.0
 - **Inter-Service Communication**: RestClient
