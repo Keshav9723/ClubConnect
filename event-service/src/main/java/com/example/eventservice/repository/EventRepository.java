@@ -13,4 +13,5 @@ public interface EventRepository {
     Event save(Event event);
     Event update(Event event);
     void deleteById(long id);
+    Integer GetEventCount();
 }

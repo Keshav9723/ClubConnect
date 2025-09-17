@@ -13,6 +13,6 @@ public interface ClubService {
     boolean validateClubExists(String name);
     ClubDTO createClub(ClubDTO clubDTO);
     ClubDTO updateClub(int id, ClubDTO clubDTO);
-    void deleteClub(int id);
+    boolean deleteClub(int id);
     Map<String, Object> getClubStatistics(String name);
 }

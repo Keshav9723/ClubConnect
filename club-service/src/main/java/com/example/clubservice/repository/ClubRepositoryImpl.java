@@ -55,13 +55,27 @@ public class ClubRepositoryImpl implements ClubRepository {
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, name);
         return count != null && count > 0;
     }
-
+    @Override
+    public Integer GetClubCount() {
+        try {
+            String sql = "SELECT COUNT(*) FROM clubs";
+            return jdbcTemplate.queryForObject(sql, Integer.class);
+        } catch (Exception e) {
+            System.out.println("Error fetching club count: " + e.getMessage());
+            return 0;
+        }
+    }
     @Override
     public Club save(Club club) {
-        String sql = "INSERT INTO clubs (name, description, category) VALUES (?, ?, ?)";
-        jdbcTemplate.update(sql, club.get_Name(), club.get_Description(), club.get_Category(),  club.get_Id());
+        int newId = this.GetClubCount() + 1;
+        club.set_Id(newId);
+
+        String sql = "INSERT INTO clubs (id, name, description, category) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, club.get_Id(), club.get_Name(), club.get_Description(), club.get_Category());
+        
         return club;
     }
+
 
     @Override
     public Club update(Club club) {
@@ -71,8 +85,9 @@ public class ClubRepositoryImpl implements ClubRepository {
     }
 
     @Override
-    public void deleteById(int id) {
+    public boolean deleteById(int id) {
         String sql = "DELETE FROM clubs WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id) > 0;
     }
+
 }

@@ -12,5 +12,6 @@ public interface ClubRepository {
     boolean existsByName(String name);
     Club save(Club club);
     Club update(Club club);
-    void deleteById(int id);
+    boolean deleteById(int id);
+    Integer GetClubCount();
 }

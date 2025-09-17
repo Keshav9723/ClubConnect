@@ -52,9 +52,24 @@ public class EventRepositoryImpl implements EventRepository {
 
     @Override
     public Event save(Event event) {
-        String sql = "INSERT INTO events (name, description, location, date_time, club_id) VALUES (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, event.get_Name(), event.get_Description(), event.get_Location(), event.get_DateTime(), event.get_ClubId());
+        long newId = this.GetEventCount() + 1;
+        event.set_Id(newId);
+
+        String sql = "INSERT INTO events (id, name, description, location, date_time, club_id) VALUES (?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, event.get_Id(), event.get_Name(), event.get_Description(), event.get_Location(), event.get_DateTime(), event.get_ClubId());
+        
         return event;
+    }
+
+    @Override
+    public Integer GetEventCount() {
+        try {
+            String sql = "SELECT COUNT(*) FROM events";
+            return jdbcTemplate.queryForObject(sql, Integer.class);
+        } catch (Exception e) {
+            System.out.println("Error fetching event count: " + e.getMessage());
+            return 0;
+        }
     }
 
     @Override

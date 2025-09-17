@@ -48,10 +48,21 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
         String sql = "SELECT * FROM registrations WHERE event_id = ?";
         return jdbcTemplate.query(sql, new RegistrationRowMapper(), eventId);
     }
-
+    @Override
+    public Integer GetRegistrationCount() {
+        try {
+            String sql = "SELECT COUNT(*) FROM registrations";
+            return jdbcTemplate.queryForObject(sql, Integer.class);
+        } catch (Exception e) {
+            System.out.println("Error fetching registration count: " + e.getMessage());
+            return 0;
+        }
+    }
     @Override
     public Registration save(Registration reg) {
-        String sql = "INSERT INTO registrations (member_id, event_id, registration_date, status, member_name, event_name) VALUES (?, ?, ?, ?, ?, ?)";
+        long newId = this.GetRegistrationCount() + 1;
+        reg.set_Id(newId);
+        String sql = "INSERT INTO registrations (id,member_id, event_id, registration_date, status, member_name, event_name) VALUES (?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, reg.get_MemberId(), reg.get_EventId(), reg.get_RegistrationDate(), reg.get_Status(), reg.get_MemberName(), reg.get_EventName());
         return reg;
     }

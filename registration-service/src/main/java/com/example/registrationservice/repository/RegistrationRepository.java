@@ -15,4 +15,5 @@ public interface RegistrationRepository {
     int deleteByMemberIdAndEventId(long memberId, long eventId);
     Optional<Registration> updateStatus(long id, String status);
     long count();
+    Integer GetRegistrationCount();
 }

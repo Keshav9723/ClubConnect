@@ -55,9 +55,24 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public Member save(Member member) {
-        String sql = "INSERT INTO members (name, email, phone, club_id) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, member.get_Name(), member.get_Email(), member.get_Phone(), member.get_ClubId());
+        long newId = this.GetMemberCount() + 1;
+        member.set_Id(newId);
+
+        String sql = "INSERT INTO members (id, name, email, phone, club_id) VALUES (?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, member.get_Id(), member.get_Name(), member.get_Email(), member.get_Phone(), member.get_ClubId());
+        
         return member;
+    }
+
+    @Override
+    public Integer GetMemberCount() {
+        try {
+            String sql = "SELECT COUNT(*) FROM members";
+            return jdbcTemplate.queryForObject(sql, Integer.class);
+        } catch (Exception e) {
+            System.out.println("Error fetching member count: " + e.getMessage());
+            return 0;
+        }
     }
 
     @Override

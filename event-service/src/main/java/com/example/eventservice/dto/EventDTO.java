@@ -3,7 +3,6 @@ package com.example.eventservice.dto;
 import java.time.LocalDateTime;
 
 public class EventDTO {
-    long _Id;
     String _Name;
     String _Description;
     String _Location;
@@ -14,8 +13,7 @@ public class EventDTO {
     public EventDTO() {}
     
     // Parameterized constructor (Added for consistency)
-    public EventDTO(long id, String name, String description, String location, LocalDateTime dateTime, int clubId) {
-        _Id = id;
+    public EventDTO(String name, String description, String location, LocalDateTime dateTime, int clubId) {
         _Name = name;
         _Description = description;
         _Location = location;
@@ -23,9 +21,6 @@ public class EventDTO {
         _ClubId = clubId;
     }
 
-    // Getters and Setters
-    public long get_Id() { return _Id; }
-    public void set_Id(long id) { _Id = id; }
     public String get_Name() { return _Name; }
     public void set_Name(String name) { _Name = name; }
     public String get_Description() { return _Description; }

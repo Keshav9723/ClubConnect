@@ -73,8 +73,8 @@ public class ClubServiceImpl implements ClubService {
     }
     
     @Override
-    public void deleteClub(int id) {
-        clubRepository.deleteById(id);
+    public boolean deleteClub(int id) {
+        return clubRepository.deleteById(id);
     }
 
 
