@@ -1,0 +1,10 @@
+com\example\registrationservice\repository\RegistrationRowMapper.class
+com\example\registrationservice\repository\RegistrationRepository.class
+com\example\registrationservice\repository\RegistrationRepositoryImpl.class
+com\example\registrationservice\controller\RegistrationController.class
+com\example\registrationservice\service\RegistrationService.class
+com\example\registrationservice\RegistrationServiceApplication.class
+com\example\registrationservice\model\Registration.class
+com\example\registrationservice\dto\RegistrationDTO.class
+com\example\registrationservice\config\AppConfig.class
+com\example\registrationservice\service\RegistrationServiceImpl.class

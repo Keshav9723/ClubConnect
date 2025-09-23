@@ -1,0 +1,10 @@
+com\example\eventservice\dto\EventDTO.class
+com\example\eventservice\config\AppConfig.class
+com\example\eventservice\repository\EventRepository.class
+com\example\eventservice\repository\EventRepositoryImpl.class
+com\example\eventservice\controller\EventController.class
+com\example\eventservice\model\Event.class
+com\example\eventservice\service\EventService.class
+com\example\eventservice\EventServiceApplication.class
+com\example\eventservice\service\EventServiceImpl.class
+com\example\eventservice\repository\EventRowMapper.class

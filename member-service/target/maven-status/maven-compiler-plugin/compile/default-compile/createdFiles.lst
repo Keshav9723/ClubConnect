@@ -1,0 +1,10 @@
+com\example\memberservice\repository\MemberRepositoryImpl.class
+com\example\memberservice\dto\MemberDTO.class
+com\example\memberservice\service\MemberServiceImpl.class
+com\example\memberservice\MemberServiceApplication.class
+com\example\memberservice\model\Member.class
+com\example\memberservice\repository\MemberRowMapper.class
+com\example\memberservice\config\AppConfig.class
+com\example\memberservice\controller\MemberController.class
+com\example\memberservice\repository\MemberRepository.class
+com\example\memberservice\service\MemberService.class
