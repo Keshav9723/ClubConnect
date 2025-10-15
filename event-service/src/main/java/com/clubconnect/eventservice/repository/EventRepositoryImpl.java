@@ -1,14 +1,9 @@
 package com.clubconnect.eventservice.repository;
 
-
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
 import com.clubconnect.eventservice.model.Event;
 
 @Repository
@@ -28,12 +23,13 @@ public class EventRepositoryImpl implements EventRepository {
     }
 
     @Override
-    public Optional<Event> findById(long id) {
+    public Event findById(long id) {
         String sql = "SELECT * FROM events WHERE id = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new EventRowMapper(), id));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
+            return jdbcTemplate.queryForObject(sql, new EventRowMapper(), id);
+        } catch (Exception e) {
+            System.out.println("Error fetching event by ID " + id + ": " + e.getMessage());
+            return null;
         }
     }
 
@@ -45,7 +41,6 @@ public class EventRepositoryImpl implements EventRepository {
 
     @Override
     public List<Event> findUpcoming() {
-        // NOW() is a standard SQL function for the current timestamp
         String sql = "SELECT * FROM events WHERE date_time > NOW() ORDER BY date_time ASC";
         return jdbcTemplate.query(sql, new EventRowMapper());
     }
@@ -80,8 +75,8 @@ public class EventRepositoryImpl implements EventRepository {
     }
 
     @Override
-    public void deleteById(long id) {
+    public boolean deleteById(long id) {
         String sql = "DELETE FROM events WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id) > 0;
     }
 }

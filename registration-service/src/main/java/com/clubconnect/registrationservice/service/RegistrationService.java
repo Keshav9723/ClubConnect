@@ -1,20 +1,20 @@
 package com.clubconnect.registrationservice.service;
 
+import com.clubconnect.registrationservice.dto.RegistrationDTO;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
-import com.clubconnect.registrationservice.dto.RegistrationDTO;
 
 public interface RegistrationService {
-    List<RegistrationDTO> getAllRegistrations();
-    Optional<RegistrationDTO> getRegistrationById(long id);
-    List<RegistrationDTO> getRegistrationsByMember(long memberId);
-    List<RegistrationDTO> getRegistrationsByEvent(long eventId);
-    RegistrationDTO createRegistration(RegistrationDTO registrationDTO);
-    Optional<RegistrationDTO> registerMemberForEvent(long memberId, long eventId);
-    boolean unregisterMemberFromEvent(long memberId, long eventId);
-    Optional<RegistrationDTO> updateRegistrationStatus(long id, String status);
-    void deleteRegistration(long id);
-    Map<String, Object> getRegistrationStatistics();
+
+    List<RegistrationDTO> GetAllRegistrations();
+    RegistrationDTO GetRegistrationById(long id);
+    List<RegistrationDTO> GetRegistrationsByMember(long memberId);
+    List<RegistrationDTO> GetRegistrationsByEvent(long eventId);
+    RegistrationDTO CreateRegistration(RegistrationDTO registrationDTO);
+    RegistrationDTO RegisterMemberForEvent(long memberId, long eventId);
+    boolean UnregisterMemberFromEvent(long memberId, long eventId);
+    RegistrationDTO UpdateRegistrationStatus(long id, String status);
+    boolean DeleteRegistration(long id);
+    Map<String, Object> GetRegistrationStatistics();
+    Map<String, Object> GetEventStatistics(long eventId);
 }

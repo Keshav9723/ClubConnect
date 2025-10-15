@@ -1,14 +1,15 @@
 package com.clubconnect.memberservice.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -16,56 +17,65 @@ import com.clubconnect.memberservice.dto.MemberDTO;
 import com.clubconnect.memberservice.model.Member;
 import com.clubconnect.memberservice.repository.MemberRepository;
 
-@Service
+@Service(value = "MemberService")
+@Scope(value = BeanDefinition.SCOPE_SINGLETON)
 public class MemberServiceImpl implements MemberService {
 
-    private final MemberRepository memberRepository;
-    private final ModelMapper modelMapper;
-    private final RestClient restClient;
-    private final String clubServiceUrl = "http://localhost:8081";
-    private final String registrationServiceUrl = "http://localhost:8084";
+    MemberRepository _MemberRepository;
+    ModelMapper _ModelMapper;
+    RestClient _RestClient;
 
     @Autowired
     public MemberServiceImpl(MemberRepository memberRepository, ModelMapper modelMapper, RestClient restClient) {
-        this.memberRepository = memberRepository;
-        this.modelMapper = modelMapper;
-        this.restClient = restClient;
-    }
-
-    private MemberDTO toDto(Member member) {
-        return modelMapper.map(member, MemberDTO.class);
-    }
-
-    private Member toEntity(MemberDTO dto) {
-        return modelMapper.map(dto, Member.class);
+        this._MemberRepository = memberRepository;
+        this._ModelMapper = modelMapper;
+        this._RestClient = restClient;
     }
 
     @Override
-    public List<MemberDTO> getAllMembers() {
-        return memberRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
+    public List<MemberDTO> GetAllMembers() {
+        List<Member> members = _MemberRepository.findAll();
+        List<MemberDTO> memberDtos = new ArrayList<>();
+        for (Member member : members) {
+            memberDtos.add(_ModelMapper.map(member, MemberDTO.class));
+        }
+        return memberDtos;
     }
 
     @Override
-    public Optional<MemberDTO> getMemberById(long id) {
-        return memberRepository.findById(id).map(this::toDto);
+    public MemberDTO GetMemberById(long id) {
+        Member member = _MemberRepository.findById(id);
+        if (member != null) {
+            return _ModelMapper.map(member, MemberDTO.class);
+        }
+        return null;
     }
 
     @Override
-    public Optional<MemberDTO> getMemberByEmail(String email) {
-        return memberRepository.findByEmail(email).map(this::toDto);
+    public MemberDTO GetMemberByEmail(String email) {
+        Member member = _MemberRepository.findByEmail(email);
+        if (member != null) {
+            return _ModelMapper.map(member, MemberDTO.class);
+        }
+        return null;
     }
 
     @Override
-    public List<MemberDTO> getMembersByClub(String clubName) {
+    public List<MemberDTO> GetMembersByClub(String clubName) {
         try {
-            Map<String, Object> club = restClient.get()
-                .uri(clubServiceUrl + "/clubs/name/" + clubName)
-                .retrieve()
-                .body(Map.class);
+            Map<String, Object> club = _RestClient.get()
+                    .uri("lb://club-service/clubs/name/{clubName}", clubName)
+                    .retrieve()
+                    .body(Map.class);
             
-            if (club != null && club.containsKey("_Id")) {
-                int clubId = (Integer) club.get("_Id");
-                return memberRepository.findByClubId(clubId).stream().map(this::toDto).collect(Collectors.toList());
+            if (club != null && club.containsKey("id")) {
+                int clubId = (Integer) club.get("id");
+                List<Member> members = _MemberRepository.findByClubId(clubId);
+                List<MemberDTO> memberDtos = new ArrayList<>();
+                for (Member member : members) {
+                    memberDtos.add(_ModelMapper.map(member, MemberDTO.class));
+                }
+                return memberDtos;
             }
         } catch (Exception e) {
             return Collections.emptyList();
@@ -74,39 +84,41 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberDTO createMember(MemberDTO memberDTO) {
-        return toDto(memberRepository.save(toEntity(memberDTO)));
+    public MemberDTO CreateMember(MemberDTO memberDTO) {
+        Member member = _ModelMapper.map(memberDTO, Member.class);
+        Member savedMember = _MemberRepository.save(member);
+        return _ModelMapper.map(savedMember, MemberDTO.class);
     }
 
     @Override
-    public MemberDTO updateMember(long id, MemberDTO memberDTO) {
-        Member member = toEntity(memberDTO);
+    public MemberDTO UpdateMember(long id, MemberDTO memberDTO) {
+        Member member = _ModelMapper.map(memberDTO, Member.class);
         member.set_Id(id);
-        return toDto(memberRepository.update(member));
+        Member updatedMember = _MemberRepository.update(member);
+        return _ModelMapper.map(updatedMember, MemberDTO.class);
     }
 
     @Override
-    public void deleteMember(long id) {
-        memberRepository.deleteById(id);
+    public boolean DeleteMember(long id) {
+        return _MemberRepository.deleteById(id);
     }
 
     @Override
-    public Map<String, Object> getMemberStatistics(long id) {
+    public Map<String, Object> GetMemberStatistics(long id) {
         Map<String, Object> stats = new HashMap<>();
-        Optional<Member> member = memberRepository.findById(id);
+        Member member = _MemberRepository.findById(id);
 
-        if (member.isEmpty()) {
+        if (member == null) {
             stats.put("error", "Member not found");
             return stats;
         }
-        stats.put("memberName", member.get().get_Name());
+        stats.put("memberName", member.get_Name());
         
         try {
-            // Assumes a GET endpoint like /registrations/member/{id}/statistics
-            Map<String, Object> registrationStats = restClient.get()
-                .uri(registrationServiceUrl + "/registrations/member/" + id + "/statistics")
-                .retrieve()
-                .body(Map.class);
+            Map<String, Object> registrationStats = _RestClient.get()
+                    .uri("lb://registration-service/registrations/member/{id}/statistics", id)
+                    .retrieve()
+                    .body(Map.class);
             
             stats.put("registeredEventsCount", registrationStats.getOrDefault("count", 0));
         } catch (Exception e) {

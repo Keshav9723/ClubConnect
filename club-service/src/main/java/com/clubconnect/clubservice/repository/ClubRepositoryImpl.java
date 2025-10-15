@@ -28,26 +28,27 @@ public class ClubRepositoryImpl implements ClubRepository {
     }
 
     @Override
-    public Optional<Club> findById(int id) {
-        String sql = "SELECT * FROM clubs WHERE id = ?";
-        try {
-            Club club = jdbcTemplate.queryForObject(sql, new ClubRowMapper(), id);
-            return Optional.ofNullable(club);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+public Club findById(int id) {
+    String sql = "SELECT * FROM clubs WHERE id = ?";
+    try {
+        return jdbcTemplate.queryForObject(sql, new ClubRowMapper(), id);
+    } catch (Exception e) {
+        // This will catch EmptyResultDataAccessException as well as other potential errors
+        System.out.println("Error fetching club by ID " + id + ": " + e.getMessage());
+        return null; // Return null if the club is not found or an error occurs
     }
+}
 
-    @Override
-    public Optional<Club> findByName(String name) {
-        String sql = "SELECT * FROM clubs WHERE name = ?";
-        try {
-            Club club = jdbcTemplate.queryForObject(sql, new ClubRowMapper(), name);
-            return Optional.ofNullable(club);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+@Override
+public Club findByName(String name) {
+    String sql = "SELECT * FROM clubs WHERE name = ?";
+    try {
+        return jdbcTemplate.queryForObject(sql, new ClubRowMapper(), name);
+    } catch (Exception e) {
+        System.out.println("Error fetching club by name '" + name + "': " + e.getMessage());
+        return null; // Return null if the club is not found or an error occurs
     }
+}
 
     @Override
     public boolean existsByName(String name) {

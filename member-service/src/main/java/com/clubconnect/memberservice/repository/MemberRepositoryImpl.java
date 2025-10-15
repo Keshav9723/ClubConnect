@@ -1,14 +1,9 @@
 package com.clubconnect.memberservice.repository;
 
-
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
 import com.clubconnect.memberservice.model.Member;
 
 @Repository
@@ -28,22 +23,24 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findById(long id) {
+    public Member findById(long id) {
         String sql = "SELECT * FROM members WHERE id = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new MemberRowMapper(), id));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
+            return jdbcTemplate.queryForObject(sql, new MemberRowMapper(), id);
+        } catch (Exception e) {
+            System.out.println("Error fetching member by ID " + id + ": " + e.getMessage());
+            return null;
         }
     }
 
     @Override
-    public Optional<Member> findByEmail(String email) {
+    public Member findByEmail(String email) {
         String sql = "SELECT * FROM members WHERE email = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new MemberRowMapper(), email));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
+            return jdbcTemplate.queryForObject(sql, new MemberRowMapper(), email);
+        } catch (Exception e) {
+            System.out.println("Error fetching member by email " + email + ": " + e.getMessage());
+            return null;
         }
     }
 
@@ -83,8 +80,8 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public void deleteById(long id) {
+    public boolean deleteById(long id) {
         String sql = "DELETE FROM members WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id) > 0;
     }
 }

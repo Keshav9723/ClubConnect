@@ -1,14 +1,9 @@
 package com.clubconnect.registrationservice.repository;
 
-
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
 import com.clubconnect.registrationservice.model.Registration;
 
 @Repository
@@ -28,12 +23,13 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
     }
 
     @Override
-    public Optional<Registration> findById(long id) {
+    public Registration findById(long id) {
         String sql = "SELECT * FROM registrations WHERE id = ?";
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new RegistrationRowMapper(), id));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
+            return jdbcTemplate.queryForObject(sql, new RegistrationRowMapper(), id);
+        } catch (Exception e) {
+            System.out.println("Error fetching registration by ID " + id + ": " + e.getMessage());
+            return null;
         }
     }
 
@@ -48,6 +44,7 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
         String sql = "SELECT * FROM registrations WHERE event_id = ?";
         return jdbcTemplate.query(sql, new RegistrationRowMapper(), eventId);
     }
+
     @Override
     public Integer GetRegistrationCount() {
         try {
@@ -58,32 +55,33 @@ public class RegistrationRepositoryImpl implements RegistrationRepository {
             return 0;
         }
     }
+
     @Override
     public Registration save(Registration reg) {
         long newId = this.GetRegistrationCount() + 1;
         reg.set_Id(newId);
-        String sql = "INSERT INTO registrations (id,member_id, event_id, registration_date, status, member_name, event_name) VALUES (?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, reg.get_MemberId(), reg.get_EventId(), reg.get_RegistrationDate(), reg.get_Status(), reg.get_MemberName(), reg.get_EventName());
+        String sql = "INSERT INTO registrations (id, member_id, event_id, registration_date, status, member_name, event_name) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, reg.get_Id(), reg.get_MemberId(), reg.get_EventId(), reg.get_RegistrationDate(), reg.get_Status(), reg.get_MemberName(), reg.get_EventName());
         return reg;
     }
 
     @Override
-    public void deleteById(long id) {
+    public boolean deleteById(long id) {
         String sql = "DELETE FROM registrations WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        return jdbcTemplate.update(sql, id) > 0;
     }
 
     @Override
-    public int deleteByMemberIdAndEventId(long memberId, long eventId) {
+    public boolean deleteByMemberIdAndEventId(long memberId, long eventId) {
         String sql = "DELETE FROM registrations WHERE member_id = ? AND event_id = ?";
-        return jdbcTemplate.update(sql, memberId, eventId);
+        return jdbcTemplate.update(sql, memberId, eventId) > 0;
     }
 
     @Override
-    public Optional<Registration> updateStatus(long id, String status) {
+    public Registration updateStatus(long id, String status) {
         String sql = "UPDATE registrations SET status = ? WHERE id = ?";
         int updatedRows = jdbcTemplate.update(sql, status, id);
-        return updatedRows > 0 ? findById(id) : Optional.empty();
+        return updatedRows > 0 ? this.findById(id) : null;
     }
 
     @Override

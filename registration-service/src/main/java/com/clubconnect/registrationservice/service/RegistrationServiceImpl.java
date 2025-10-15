@@ -1,14 +1,15 @@
 package com.clubconnect.registrationservice.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -16,97 +17,120 @@ import com.clubconnect.registrationservice.dto.RegistrationDTO;
 import com.clubconnect.registrationservice.model.Registration;
 import com.clubconnect.registrationservice.repository.RegistrationRepository;
 
-@Service
+@Service(value = "RegistrationService")
+@Scope(value = BeanDefinition.SCOPE_SINGLETON)
 public class RegistrationServiceImpl implements RegistrationService {
 
-    private final RegistrationRepository registrationRepository;
-    private final ModelMapper modelMapper;
-    private final RestClient restClient;
-    private final String memberServiceUrl = "http://localhost:8082";
-    private final String eventServiceUrl = "http://localhost:8083";
+    RegistrationRepository _RegistrationRepository;
+    ModelMapper _ModelMapper;
+    RestClient _RestClient;
 
     @Autowired
     public RegistrationServiceImpl(RegistrationRepository repo, ModelMapper mapper, RestClient client) {
-        this.registrationRepository = repo;
-        this.modelMapper = mapper;
-        this.restClient = client;
-    }
-
-    private RegistrationDTO toDto(Registration reg) {
-        return modelMapper.map(reg, RegistrationDTO.class);
-    }
-
-    private Registration toEntity(RegistrationDTO dto) {
-        return modelMapper.map(dto, Registration.class);
+        this._RegistrationRepository = repo;
+        this._ModelMapper = mapper;
+        this._RestClient = client;
     }
     
     @Override
-    public List<RegistrationDTO> getAllRegistrations() {
-        return registrationRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
+    public List<RegistrationDTO> GetAllRegistrations() {
+        List<Registration> registrations = _RegistrationRepository.findAll();
+        List<RegistrationDTO> dtos = new ArrayList<>();
+        for (Registration reg : registrations) {
+            dtos.add(_ModelMapper.map(reg, RegistrationDTO.class));
+        }
+        return dtos;
     }
 
     @Override
-    public Optional<RegistrationDTO> getRegistrationById(long id) {
-        return registrationRepository.findById(id).map(this::toDto);
+    public RegistrationDTO GetRegistrationById(long id) {
+        Registration reg = _RegistrationRepository.findById(id);
+        if (reg != null) {
+            return _ModelMapper.map(reg, RegistrationDTO.class);
+        }
+        return null;
     }
 
     @Override
-    public List<RegistrationDTO> getRegistrationsByMember(long memberId) {
-        return registrationRepository.findByMemberId(memberId).stream().map(this::toDto).collect(Collectors.toList());
+    public List<RegistrationDTO> GetRegistrationsByMember(long memberId) {
+        List<Registration> registrations = _RegistrationRepository.findByMemberId(memberId);
+        List<RegistrationDTO> dtos = new ArrayList<>();
+        for (Registration reg : registrations) {
+            dtos.add(_ModelMapper.map(reg, RegistrationDTO.class));
+        }
+        return dtos;
     }
 
     @Override
-    public List<RegistrationDTO> getRegistrationsByEvent(long eventId) {
-        return registrationRepository.findByEventId(eventId).stream().map(this::toDto).collect(Collectors.toList());
+    public List<RegistrationDTO> GetRegistrationsByEvent(long eventId) {
+        List<Registration> registrations = _RegistrationRepository.findByEventId(eventId);
+        List<RegistrationDTO> dtos = new ArrayList<>();
+        for (Registration reg : registrations) {
+            dtos.add(_ModelMapper.map(reg, RegistrationDTO.class));
+        }
+        return dtos;
     }
 
     @Override
-    public RegistrationDTO createRegistration(RegistrationDTO registrationDTO) {
-        return toDto(registrationRepository.save(toEntity(registrationDTO)));
+    public RegistrationDTO CreateRegistration(RegistrationDTO registrationDTO) {
+        Registration reg = _ModelMapper.map(registrationDTO, Registration.class);
+        Registration savedReg = _RegistrationRepository.save(reg);
+        return _ModelMapper.map(savedReg, RegistrationDTO.class);
     }
 
     @Override
-    public Optional<RegistrationDTO> registerMemberForEvent(long memberId, long eventId) {
+    public RegistrationDTO RegisterMemberForEvent(long memberId, long eventId) {
         try {
-            // 1. Fetch member name from MemberService
-            Map<String, Object> member = restClient.get().uri(memberServiceUrl + "/members/" + memberId).retrieve().body(Map.class);
-            String memberName = (String) member.get("_Name");
+            Map<String, Object> member = _RestClient.get().uri("lb://member-service/members/{id}", memberId).retrieve().body(Map.class);
+            String memberName = (String) member.get("name");
 
-            // 2. Fetch event name from EventService
-            Map<String, Object> event = restClient.get().uri(eventServiceUrl + "/events/" + eventId).retrieve().body(Map.class);
-            String eventName = (String) event.get("_Name");
+            Map<String, Object> event = _RestClient.get().uri("lb://event-service/events/{id}", eventId).retrieve().body(Map.class);
+            String eventName = (String) event.get("name");
             
-            if (memberName == null || eventName == null) return Optional.empty();
+            if (memberName == null || eventName == null) {
+                return null;
+            }
 
-            // 3. Create and save the new registration
             Registration newReg = new Registration(0, memberId, eventId, LocalDateTime.now(), "CONFIRMED", memberName, eventName);
-            Registration savedReg = registrationRepository.save(newReg);
-            return Optional.of(toDto(savedReg));
+            Registration savedReg = _RegistrationRepository.save(newReg);
+            return _ModelMapper.map(savedReg, RegistrationDTO.class);
             
         } catch (Exception e) {
-            return Optional.empty();
+            return null;
         }
     }
 
     @Override
-    public boolean unregisterMemberFromEvent(long memberId, long eventId) {
-        return registrationRepository.deleteByMemberIdAndEventId(memberId, eventId) > 0;
+    public boolean UnregisterMemberFromEvent(long memberId, long eventId) {
+        return _RegistrationRepository.deleteByMemberIdAndEventId(memberId, eventId);
     }
 
     @Override
-    public Optional<RegistrationDTO> updateRegistrationStatus(long id, String status) {
-        return registrationRepository.updateStatus(id, status).map(this::toDto);
+    public RegistrationDTO UpdateRegistrationStatus(long id, String status) {
+        Registration updatedReg = _RegistrationRepository.updateStatus(id, status);
+        if (updatedReg != null) {
+            return _ModelMapper.map(updatedReg, RegistrationDTO.class);
+        }
+        return null;
     }
 
     @Override
-    public void deleteRegistration(long id) {
-        registrationRepository.deleteById(id);
+    public boolean DeleteRegistration(long id) {
+        return _RegistrationRepository.deleteById(id);
     }
 
     @Override
-    public Map<String, Object> getRegistrationStatistics() {
+    public Map<String, Object> GetRegistrationStatistics() {
         Map<String, Object> stats = new HashMap<>();
-        stats.put("totalRegistrations", registrationRepository.count());
+        stats.put("totalRegistrations", _RegistrationRepository.count());
+        return stats;
+    }
+
+    @Override
+    public Map<String, Object> GetEventStatistics(long eventId) {
+        Map<String, Object> stats = new HashMap<>();
+        long count = _RegistrationRepository.findByEventId(eventId).size();
+        stats.put("count", count);
         return stats;
     }
 }

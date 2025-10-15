@@ -1,14 +1,15 @@
 package com.clubconnect.eventservice.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -16,131 +17,133 @@ import com.clubconnect.eventservice.dto.EventDTO;
 import com.clubconnect.eventservice.model.Event;
 import com.clubconnect.eventservice.repository.EventRepository;
 
-@Service
+@Service(value = "EventService")
+@Scope(value = BeanDefinition.SCOPE_SINGLETON)
 public class EventServiceImpl implements EventService {
 
-    private final EventRepository eventRepository;
-    private final ModelMapper modelMapper;
-    private final RestClient restClient;
-    // You'd typically load these from a config file
-    private final String clubServiceUrl = "http://localhost:8081";
-    private final String registrationServiceUrl = "http://localhost:8084"; // Assuming port for registration service
+    EventRepository _EventRepository;
+    ModelMapper _ModelMapper;
+    RestClient _RestClient;
 
     @Autowired
     public EventServiceImpl(EventRepository eventRepository, ModelMapper modelMapper, RestClient restClient) {
-        this.eventRepository = eventRepository;
-        this.modelMapper = modelMapper;
-        this.restClient = restClient;
-    }
-    
-    // Helper method to convert Entity to DTO
-    private EventDTO toDto(Event event) {
-        return modelMapper.map(event, EventDTO.class);
-    }
-    
-    // Helper method to convert DTO to Entity
-    private Event toEntity(EventDTO dto) {
-        return modelMapper.map(dto, Event.class);
+        this._EventRepository = eventRepository;
+        this._ModelMapper = modelMapper;
+        this._RestClient = restClient;
     }
 
     @Override
-    public List<EventDTO> getAllEvents() {
-        return eventRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
+    public List<EventDTO> GetAllEvents() {
+        List<Event> events = _EventRepository.findAll();
+        List<EventDTO> eventDtos = new ArrayList<>();
+        for (Event event : events) {
+            eventDtos.add(_ModelMapper.map(event, EventDTO.class));
+        }
+        return eventDtos;
     }
 
     @Override
-    public Optional<EventDTO> getEventById(long id) {
-        return eventRepository.findById(id).map(this::toDto);
+    public EventDTO GetEventById(long id) {
+        Event event = _EventRepository.findById(id);
+        if (event != null) {
+            return _ModelMapper.map(event, EventDTO.class);
+        }
+        return null;
     }
 
     @Override
-    public List<EventDTO> getEventsByClub(String clubName) {
-        // 1. Call ClubService to get the club's ID from its name
-        // This assumes ClubService has a DTO that includes the club's ID
+    public List<EventDTO> GetEventsByClub(String clubName) {
         try {
-            Map<String, Object> club = restClient.get()
-                .uri(clubServiceUrl + "/clubs/name/" + clubName)
-                .retrieve()
-                .body(Map.class);
+            Map<String, Object> club = _RestClient.get()
+                    .uri("lb://club-service/clubs/name/{clubName}", clubName)
+                    .retrieve()
+                    .body(Map.class);
             
-            if (club != null && club.containsKey("_Id")) {
-                int clubId = (Integer) club.get("_Id");
-                // 2. Use the clubId to find events
-                return eventRepository.findByClubId(clubId).stream().map(this::toDto).collect(Collectors.toList());
+            if (club != null && club.containsKey("id")) {
+                int clubId = (Integer) club.get("id");
+                List<Event> events = _EventRepository.findByClubId(clubId);
+                List<EventDTO> eventDtos = new ArrayList<>();
+                for (Event event : events) {
+                    eventDtos.add(_ModelMapper.map(event, EventDTO.class));
+                }
+                return eventDtos;
             }
         } catch (Exception e) {
-            // Handle cases where club is not found or club-service is down
             return Collections.emptyList();
         }
         return Collections.emptyList();
     }
 
     @Override
-    public List<EventDTO> getUpcomingEvents() {
-        return eventRepository.findUpcoming().stream().map(this::toDto).collect(Collectors.toList());
+    public List<EventDTO> GetUpcomingEvents() {
+        List<Event> events = _EventRepository.findUpcoming();
+        List<EventDTO> eventDtos = new ArrayList<>();
+        for (Event event : events) {
+            eventDtos.add(_ModelMapper.map(event, EventDTO.class));
+        }
+        return eventDtos;
     }
 
     @Override
-    public EventDTO createEvent(EventDTO eventDTO) {
-        Event event = toEntity(eventDTO);
-        return toDto(eventRepository.save(event));
+    public EventDTO CreateEvent(EventDTO eventDTO) {
+        Event event = _ModelMapper.map(eventDTO, Event.class);
+        Event savedEvent = _EventRepository.save(event);
+        return _ModelMapper.map(savedEvent, EventDTO.class);
     }
 
     @Override
-    public EventDTO updateEvent(long id, EventDTO eventDTO) {
-        Event event = toEntity(eventDTO);
-        event.set_Id(id); // Ensure the ID from the path is used
-        return toDto(eventRepository.update(event));
+    public EventDTO UpdateEvent(long id, EventDTO eventDTO) {
+        Event event = _ModelMapper.map(eventDTO, Event.class);
+        event.set_Id(id);
+        Event updatedEvent = _EventRepository.update(event);
+        return _ModelMapper.map(updatedEvent, EventDTO.class);
     }
 
+
+
     @Override
-    public void deleteEvent(long id) {
-        eventRepository.deleteById(id);
+    public boolean DeleteEvent(long id) {
+        return _EventRepository.deleteById(id);
     }
     
     @Override
-    public boolean registerMemberForEvent(long eventId, long memberId) {
-        // 1. Check if the event exists
-        if (eventRepository.findById(eventId).isEmpty()) {
+    public boolean RegisterMemberForEvent(long eventId, long memberId) {
+        if (_EventRepository.findById(eventId) == null) {
             return false;
         }
 
-        // 2. Call RegistrationService to create the registration
-        // This assumes a POST endpoint on RegistrationService like /registrations
         try {
             Map<String, Long> requestBody = Map.of("memberId", memberId, "eventId", eventId);
             
-            Map response = restClient.post()
-                .uri(registrationServiceUrl + "/registrations")
-                .body(requestBody)
-                .retrieve()
-                .body(Map.class);
-                
-            return response != null; // Success if we get any response back
+            Map response = _RestClient.post()
+                    .uri("lb://registration-service/registrations")
+                    .body(requestBody)
+                    .retrieve()
+                    .body(Map.class);
+                    
+            return response != null;
         } catch (Exception e) {
             return false;
         }
     }
 
     @Override
-    public Map<String, Object> getEventStatistics(long id) {
+    public Map<String, Object> GetEventStatistics(long id) {
         Map<String, Object> stats = new HashMap<>();
-        Optional<Event> event = eventRepository.findById(id);
+        Event event = _EventRepository.findById(id);
 
-        if (event.isEmpty()) {
+        if (event == null) {
             stats.put("error", "Event not found");
             return stats;
         }
 
-        stats.put("eventName", event.get().get_Name());
+        stats.put("eventName", event.get_Name());
 
-        // Call RegistrationService to get the count of registered members
-        // Assumes a GET endpoint like /registrations/event/{id}/count
         try {
-            Map<String, Object> registrationStats = restClient.get()
-                .uri(registrationServiceUrl + "/registrations/event/" + id + "/statistics")
-                .retrieve()
-                .body(Map.class);
+            Map<String, Object> registrationStats = _RestClient.get()
+                    .uri("lb://registration-service/registrations/event/{id}/statistics", id)
+                    .retrieve()
+                    .body(Map.class);
             
             stats.put("registeredMembers", registrationStats.getOrDefault("count", 0));
         } catch (Exception e) {

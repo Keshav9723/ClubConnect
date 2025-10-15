@@ -7,8 +7,8 @@ import com.clubconnect.clubservice.model.Club;
 
 public interface ClubRepository {
     List<Club> findAll();
-    Optional<Club> findById(int id);
-    Optional<Club> findByName(String name);
+    Club findById(int id);
+    Club findByName(String name);
     boolean existsByName(String name);
     Club save(Club club);
     Club update(Club club);

@@ -70,35 +70,42 @@ A comprehensive club management system built with Spring Boot microservices arch
 - Monitors health of all services
 - Acts as a phone book for services
 
-### **2. API Gateway (Port 8080)**
+### **2. Config Server (Port 8888)**
+**Role**: Centralized Configuration Management
+- Provides externalized configuration for all microservices
+- Manages application-specific properties from a Git repository
+- Enables dynamic configuration updates without service restarts
+- Acts as a single source of truth for configurations
+
+### **3. API Gateway (Port 8080)**
 **Role**: Single Entry Point & Load Balancer
 - Routes client requests to appropriate services
 - Provides load balancing
 - Handles cross-cutting concerns
 - Single point of access for all clients
 
-### **3. Club Service (Port 8081)**
+### **4. Club Service (Port 8081)**
 **Role**: Club Management & Data Orchestration
 - Manages club information (name, description, category)
 - Fetches member and event counts from other services
 - Provides enriched club data with statistics
 - Acts as central reference for club validation
 
-### **4. Member Service (Port 8082)**
+### **5. Member Service (Port 8082)**
 **Role**: Member Management & Club Validation
 - Manages member information (name, email, phone, club)
 - Validates club existence before creating members
 - Provides member statistics and club-based filtering
 - Enriches member data with club details
 
-### **5. Event Service (Port 8083)**
+### **6. Event Service (Port 8083)**
 **Role**: Event Management & Capacity Control
 - Manages events (name, description, location, date, capacity)
 - Controls event capacity and prevents overbooking
 - Validates club existence for events
 - Provides upcoming events filtering
 
-### **6. Registration Service (Port 8084)**
+### **7. Registration Service (Port 8084)**
 **Role**: Member-Event Linking & Validation
 - Links members to events (registrations)
 - Validates both member and event existence

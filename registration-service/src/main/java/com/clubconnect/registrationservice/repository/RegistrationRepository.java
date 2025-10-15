@@ -1,19 +1,18 @@
 package com.clubconnect.registrationservice.repository;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.clubconnect.registrationservice.model.Registration;
+import java.util.List;
 
 public interface RegistrationRepository {
+
     List<Registration> findAll();
-    Optional<Registration> findById(long id);
+    Registration findById(long id);
     List<Registration> findByMemberId(long memberId);
     List<Registration> findByEventId(long eventId);
-    Registration save(Registration registration);
-    void deleteById(long id);
-    int deleteByMemberIdAndEventId(long memberId, long eventId);
-    Optional<Registration> updateStatus(long id, String status);
-    long count();
     Integer GetRegistrationCount();
+    Registration save(Registration reg);
+    boolean deleteById(long id);
+    boolean deleteByMemberIdAndEventId(long memberId, long eventId);
+    Registration updateStatus(long id, String status);
+    long count();
 }

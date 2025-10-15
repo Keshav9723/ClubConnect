@@ -1,20 +1,18 @@
 package com.clubconnect.eventservice.service;
 
+import com.clubconnect.eventservice.dto.EventDTO;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
-import com.clubconnect.eventservice.dto.EventDTO;
 
 public interface EventService {
-    List<EventDTO> getAllEvents();
-    Optional<EventDTO> getEventById(long id);
-    List<EventDTO> getEventsByClub(String clubName);
-    List<EventDTO> getUpcomingEvents();
-    EventDTO createEvent(EventDTO eventDTO);
-    EventDTO updateEvent(long id, EventDTO eventDTO);
-    void deleteEvent(long id);
-    boolean registerMemberForEvent(long eventId, long memberId);
-    Map<String, Object> getEventStatistics(long id);
-    // You can add an unregister method here as well
+
+    List<EventDTO> GetAllEvents();
+    EventDTO GetEventById(long id);
+    List<EventDTO> GetEventsByClub(String clubName);
+    List<EventDTO> GetUpcomingEvents();
+    EventDTO CreateEvent(EventDTO eventDTO);
+    EventDTO UpdateEvent(long id, EventDTO eventDTO);
+    boolean DeleteEvent(long id);
+    boolean RegisterMemberForEvent(long eventId, long memberId);
+    Map<String, Object> GetEventStatistics(long id);
 }

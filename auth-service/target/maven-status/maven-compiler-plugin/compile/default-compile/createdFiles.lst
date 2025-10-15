@@ -1,0 +1,9 @@
+com\clubconnect\authservice\AuthserviceApplication.class
+com\clubconnect\authservice\controller\AuthController.class
+com\clubconnect\authservice\model\User.class
+com\clubconnect\authservice\dto\AuthDTO.class
+com\clubconnect\authservice\service\AuthService.class
+com\clubconnect\authservice\dto\ReturnDTO.class
+com\clubconnect\authservice\repository\AuthRepository.class
+com\clubconnect\authservice\config\AuthServiceConfig.class
+com\clubconnect\authservice\dto\SignupDTO.class
